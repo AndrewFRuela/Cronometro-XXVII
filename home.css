@@ -1,0 +1,123 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #4F7942; /* Verde estilo militar */
+    margin: 0;
+    padding: 0;
+    color: white; /* Cor do texto */
+}
+
+.container1 {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 100px;
+    background-color: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    text-align: center; /* Centraliza todos os textos dentro do contêiner */
+    border-radius: 10px;
+
+}
+
+h1 {
+    margin-top: 10px; /* Ajuste este valor conforme necessário */
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 78px;
+    background-color: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    text-align: center; /* Centraliza todos os textos dentro do contêiner */
+    border-radius: 10px;
+}
+
+h2 {
+    margin: 50px 0; /* Adiciona espaço acima e abaixo dos títulos */
+}
+
+ul {
+    list-style-type: none; /* Remove os marcadores da lista */
+    padding: 0; /* Remove o padding padrão da lista */
+}
+
+ul li {
+    margin: 10px 0; /* Adiciona espaço entre os itens da lista */
+}
+
+h1 {
+    color: #FFD700; /* Amarelo dourado para o título */
+}
+
+.iniciar-symbol {
+    margin: 20px 0;
+    font-size: 40px;
+    color: red; /* Cor vermelha para o símbolo Iniciar */
+    cursor: pointer; /* Muda o cursor ao passar o mouse */
+}
+
+.iniciar-symbol.parar {
+    background-color: gray; /* Cor cinza para o botão Parar */
+    color: white; /* Texto branco para melhor contraste */
+    padding: 2px 6px; /* Adiciona padding ao botão */
+    border-radius: 5px; /* Bordas arredondadas */
+}
+
+.cronometro {
+    font-size: 120px; /* Tamanho do cronômetro */
+    margin-top: 20px;
+}
+
+.espaco {
+    height: 20px; /* Altura do espaço entre o cronômetro e o link */
+}
+
+a {
+    color: #FFD700; /* Cor do link */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; /* Efeito hover no link */
+}
+
+.sinal {
+    position: fixed;
+}
+
+#sinal-esq {
+    top: calc(9.4vh); /* Proporcional à altura da viewport */
+    left: calc(19.8vw); /* Proporcional à largura da viewport */
+    width: 5.2vw; /* Ajusta a largura conforme a largura da viewport */
+}
+
+#sinal-dir {
+    top: calc(8.3vh);
+    right: calc(19.4vw);
+    width: 6vw;
+}
+
+.faltas-btn {
+    background-color: #FFD700; /* Amarelo dourado */
+    color: black; /* Texto preto para contraste */
+    border: none; /* Remove borda padrão */
+    padding: 10px 20px; /* Adiciona espaço ao redor do texto */
+    font-size: 18px; /* Aumenta o tamanho do texto */
+    cursor: pointer; /* Muda o cursor ao passar o mouse */
+    border-radius: 8px; /* Bordas arredondadas */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Animação suave */
+}
+
+.faltas-btn:hover {
+    background-color: #FFA500; /* Laranja ao passar o mouse */
+    transform: scale(1.05); /* Leve aumento ao passar o mouse */
+}
+
+.faltas-btn:active {
+    background-color: #FF8C00; /* Laranja mais escuro ao clicar */
+    transform: scale(0.98); /* Efeito de "pressionado" ao clicar */
+}
+
+.faltasContainer {
+    font-size: 28px;
+
+}
