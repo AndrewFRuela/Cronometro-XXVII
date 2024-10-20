@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Conjuntos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <div class="container">
+
+        <!-- Novo formulário para adicionar múltiplos cavalos -->
+        <h1>Adicionar Conjuntos</h1>
+        <form action="{{ url_for('adicionar_varios_cavalos') }}" method="POST">
+            <label for="nomes_cavalos">Cole aqui os nomes dos conjuntos (um por linha):</label>
+            <br>
+            <textarea name="nomes_cavalos" id="nomes_cavalos" rows="10" cols="30" placeholder="Ex: Cavalo 1, (Enter), Cavalo 2,(Enter), Cavalo 3"></textarea>
+            <br>
+            <button type="submit">Adicionar Conjuntos</button>
+        </form>
+
+        <!-- Seção para exibir os cavalos existentes -->
+        <br><br><br>
+        <h2>Conjuntos Existentes</h2>
+
+        <!-- Exibir botão "Excluir Todos" somente se houver cavalos -->
+        {% if cavalos %}
+        <form action="/excluir_todos_cavalos" method="POST" style="display:inline;">
+            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir todos os conjuntos?');">Excluir Todos os Conjuntos</button>
+            <br><br><br>
+        </form>
+        {% endif %}
+
+        <ul>
+            {% if cavalos %}
+                {% for cavalo in cavalos %}
+                <li>
+                    {{ cavalo.nome }}
+                    <form action="/remover_cavalo/{{ cavalo.id }}" method="POST" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este conjunto?');">Excluir</button>
+                    </form>
+                </li>
+                {% endfor %}
+            {% else %}
+                <li>Não há conjuntos adicionados ainda</li>
+            {% endif %}
+        </ul>
+
+        <a href="/cronometroinicial"><br><br>Iniciar Cronômetro<br></a>
+        <a href="/"><br>Menu</a>
+    </div>
+</body>
+</html>

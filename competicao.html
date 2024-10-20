@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competição</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Iniciar Competição</h1>
+
+        <!-- Seleção do nome da competição -->
+        <label for="nomeCompeticao">Nome da Competição:</label>
+        <input type="text" id="nomeCompeticao" required>
+
+        <!-- Mensagem de erro -->
+        <p id="error-message" style="color: red; display: none;">Por favor, insira um nome para a competição.</p>
+
+        <!-- Verifica se existem cavalos adicionados -->
+        {% if cavalos %}
+        <!-- Seleção de cavalos -->
+        <label for="numeroCavalos"><br><br>Número de Conjuntos Participantes</label>
+        <select id="numeroCavalos" onchange="atualizaCavalosSelecionados()"><br>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+
+        <div id="cavalosSelecionados"></div>
+
+        <!-- Botão de confirmar seleção -->
+        <br>
+        <button onclick="confirmarSelecionados()">Confirmar</button>
+        <br>
+        {% else %}
+        <br><br>
+        Atenção! Você deve adicionar conjuntos em <a href="/adicionar_cavalo" style="color: red; text-decoration: underline;">Gerenciamento de Conjuntos</a> para habilitar o uso do cronômetro</p>
+        {% endif %}
+
+        <!-- Cronômetro e contador de faltas -->
+        <div id="cronometroContainer" style="display:none;">
+            <div class="cronometro" id="cronometro">00:00:00</div>
+
+            <div class="iniciar">
+                <span id="startButton" class="iniciar-symbol" onclick="startCronometro()">Iniciar</span>
+                <br>
+            </div>
+
+            <!-- Contador de Faltas -->
+            <div class="faltasContainer">
+                <br>
+                <label for="faltas">Faltas:</label>
+                <span id="contadorFaltas">0</span>
+                <button class="faltas-btn" onclick="adicionarFalta()">+</button>
+                <button class="faltas-btn" onclick="removerFalta()">-</button>
+            </div>
+        </div>
+        <div></div>
+    <br><br><br>
+        <a href="/">Voltar para o Menu</a>
+    </div>
+
+    <script>
+        let timer;
+        let isRunning = false;
+        let milliseconds = 0;
+        let cavaloAtual = 0;
+        let totalCavalos = 0;
+        let nomeCompeticao = '';
+        let cavalosSelecionados = [];
+        let faltas = 0;
+
+        // Atualizar seleção de cavalos
+        function atualizaCavalosSelecionados() {
+            const numeroCavalos = document.getElementById('numeroCavalos').value;
+            const cavalosSelecionadosDiv = document.getElementById('cavalosSelecionados');
+            totalCavalos = parseInt(numeroCavalos);
+            cavalosSelecionadosDiv.innerHTML = '';
+
+            for (let i = 0; i < totalCavalos; i++) {
+                cavalosSelecionadosDiv.innerHTML += `
+                    <label for="cavalo${i}">Cavalo ${i + 1}:</label>
+                    <select id="cavalo${i}">
+                        {% for cavalo in cavalos %}
+                        <option value="{{ cavalo.id }}">{{ cavalo.nome }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>`;
+            }
+        }
+
+        function confirmarSelecionados() {
+    nomeCompeticao = document.getElementById('nomeCompeticao').value;
+
+    // Verifica se o nome da competição foi inserido
+    if (!nomeCompeticao.trim()) {
+        document.getElementById('error-message').style.display = 'block';
+        document.getElementById('error-message').textContent = 'Por favor, insira um nome para a competição.';
+        return;
+    }
+
+    // Exibe a mensagem de confirmação
+    const confirmacao = confirm("Tem certeza de que deseja confirmar os participantes? Não será possível alterar a ordem dos conjuntos após a confirmação.");
+    if (!confirmacao) {
+        return; // O usuário cancelou a confirmação
+    }
+
+    // Verificar se o nome da competição já existe
+    fetch(`/verificar_nome_competicao/${nomeCompeticao}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                // Exibir mensagem de erro se o nome já existir
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('error-message').textContent = data.error;
+            } else {
+                // Nome da competição está disponível, então pode seguir
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('cronometroContainer').style.display = 'block';
+
+                for (let i = 0; i < totalCavalos; i++) {
+                    cavalosSelecionados.push(document.getElementById(`cavalo${i}`).value);
+                }
+                resetCronometro();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao verificar o nome da competição:', error);
+        });
+}
+
+
+
+        // Iniciar cronômetro
+        function startCronometro() {
+            const button = document.getElementById('startButton');
+            if (!isRunning) {
+                button.textContent = 'Parar';
+                isRunning = true;
+                startTimer();
+            } else {
+                button.textContent = 'Iniciar';
+                isRunning = false;
+                clearInterval(timer);
+                salvarResultadoCavalo();
+            }
+        }
+
+        // Função de temporização
+        function startTimer() {
+            timer = setInterval(function() {
+                milliseconds += 10;
+                const date = new Date(milliseconds);
+                const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+                const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+                const millis = String(date.getUTCMilliseconds()).padStart(3, '0');
+                document.getElementById('cronometro').textContent = `${minutes}:${seconds}:${millis}`;
+            }, 10);
+        }
+
+        // Resetar cronômetro e contador de faltas
+        function resetCronometro() {
+            milliseconds = 0;
+            faltas = 0;
+            document.getElementById('cronometro').textContent = '00:00:00';
+            document.getElementById('contadorFaltas').textContent = '0';
+            document.getElementById('startButton').textContent = 'Iniciar';
+            isRunning = false;
+        }
+
+        // Funções para adicionar/remover faltas
+        function adicionarFalta() {
+            faltas++;
+            document.getElementById('contadorFaltas').textContent = faltas;
+        }
+
+        function removerFalta() {
+            if (faltas > 0) {
+                faltas--;
+                document.getElementById('contadorFaltas').textContent = faltas;
+            }
+        }
+
+        // Salvar resultado do cavalo
+        function salvarResultadoCavalo() {
+            const cavaloId = cavalosSelecionados[cavaloAtual];
+            const tempo = document.getElementById('cronometro').textContent;
+
+            // Enviar dados para o servidor
+            fetch(`/salvar_resultado_competicao/${cavaloId}/${tempo}/${faltas}/${nomeCompeticao}`, {
+                method: 'POST'
+            }).then(response => {
+                if (response.ok) {
+                    cavaloAtual++;
+                    if (cavaloAtual < totalCavalos) {
+                        resetCronometro();
+                    } else {
+                        window.location.href = '/competicoesanteriores';
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

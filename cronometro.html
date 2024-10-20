@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronômetro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Cronômetro</h1>
+
+        <!-- Mensagem de erro se não houver cavalos -->
+        <div id="mensagemErro" style="color: white; display: none; margin-bottom: 20px;">
+            Atenção! Você deve adicionar conjuntos em <a href="/adicionar_cavalo" style="color: red; text-decoration: underline;">Gerenciamento de Conjunto</a> para habilitar o uso do cronômetro
+        </div>
+
+        <!-- Caixa de escolha dinâmica para os cavalos -->
+        <label for="cavaloSelect">Escolha um conjunto:</label>
+        <select id="cavaloSelect">
+            {% for cavalo in cavalos %}
+            <option value="{{ cavalo.nome }}">{{ cavalo.nome }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="espaco"></div>
+        <div class="iniciar">
+            <span id="startStopButton" class="iniciar-symbol" onclick="startStopCronometro()">Iniciar</span>
+        </div>
+
+        <div class="cronometro" id="cronometro">
+            00:00:00
+        </div>
+
+        <div class="espaco"></div>
+        <br><br><br>
+        <a href="/cronometroinicial">Voltar</a>
+        <br><br>
+        <a href="/">Menu</a>
+    </div>
+
+    <script>
+        let timer;
+        let isRunning = false;
+        let milliseconds = 0;
+
+        // Função para iniciar/parar o cronômetro
+        function startStopCronometro() {
+            const button = document.getElementById('startStopButton');
+            const mensagemErro = document.getElementById('mensagemErro');
+
+            // Verifica se não há cavalos adicionados
+            if (document.getElementById('cavaloSelect').options.length === 0) {
+                mensagemErro.style.display = 'block';  // Exibe a mensagem de erro
+                return;  // Impede a execução do restante da função
+            } else {
+                mensagemErro.style.display = 'none';  // Esconde a mensagem se houver cavalos
+            }
+
+            if (!isRunning) {
+                button.textContent = 'Parar';
+                button.classList.add('parar');
+                isRunning = true;
+                startTimer();
+            } else {
+                button.textContent = 'Iniciar';
+                button.classList.remove('parar');
+                isRunning = false;
+                clearInterval(timer);
+
+                const cavaloSelecionado = document.getElementById('cavaloSelect').value;
+                const tempoAtual = document.getElementById('cronometro').textContent;
+
+                // Salva o resultado para o cavalo escolhido
+                window.location.href = `/salvar_resultado/${tempoAtual}/${cavaloSelecionado}`;
+            }
+        }
+
+        function startTimer() {
+            timer = setInterval(function() {
+                milliseconds += 10;
+                const date = new Date(milliseconds);
+                const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+                const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+                const millis = String(date.getUTCMilliseconds()).padStart(3, '0');
+                document.getElementById('cronometro').textContent = `${minutes}:${seconds}:${millis}`;
+            }, 10);
+        }
+    </script>
+</body>
+</html>

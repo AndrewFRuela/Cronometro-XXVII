@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <img src="{{ url_for('static', filename='cavalinho.jpg') }}" class="sinal" id="sinal-esq" alt="Símbolo Eseqex">
+    <img src="{{ url_for('static', filename='simbolo_ime.png') }}" class="sinal" id="sinal-dir" alt="Símbolo Ime">
+
+    <div class="container">
+        <h1 style="margin-top: -50px; font-size: 40px;">Cronômetro do Centro Hípico do Rio de Janeiro</h1>
+        <h2 style="font-size: 28px;">Menu</h2>
+        <a href="/cronometroinicial" style="font-size: 20px;">Iniciar Cronômetro</a>
+        <br><br><br>
+        <a href="/resultados" style="font-size: 20px;">Treinamentos Anteriores</a>
+        <br><br><br>
+         <a href="/competicoesanteriores" style="font-size: 20px;">Competições Anteriores</a>
+        <br><br><br>
+        <a href="/adicionar_cavalo" style="font-size: 20px;">Gerenciamento de Conjuntos</a>
+
+    </div>
+</body>
+</html>
