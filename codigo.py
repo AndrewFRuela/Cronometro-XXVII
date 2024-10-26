@@ -53,9 +53,6 @@ def salvar_resultado_competicao(cavalo_id, tempo, competicao, faltas):
     db.session.commit()
 
 
-
-
-
 # Exibir resultados de treinamentos anteriores
 @app.route('/resultados')
 def exibir_resultados():
